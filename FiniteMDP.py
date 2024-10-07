@@ -1,5 +1,3 @@
-pages = "69 - 94"
-
 class FiniteMDPenv:
     """
     over discrete time steps

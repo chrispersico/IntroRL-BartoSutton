@@ -47,6 +47,75 @@ class DynamicProgramming:
 
     env to test pag. 98
 
+    evaluation and improvement follow each others
+    we know that each policy is a strict improvement over the other, unless already optimal
+    finite MDP only finite number of policies, in the end ensured convergence.
+
+    POLICY ITERATION
+    1. initialization:
+    V(s) in Real and pi(s) in A(s) arbitrarily for all s in S
+    2. policy evaluation:
+    Loop:
+    delta <- 0
+    Loop for each s in S:
+        v <- V(s)
+        V(s) <- sum(s',r) P(s',r|s,pi(s))[r + gamma V(s')]
+        delta <- max(delta, |v -V(s)|)
+    until delta < theta
+    3. policy improvement:
+    policy-stable <- true
+    for each s in S:
+        old-action <- pi(s)
+        pi(s) <- argmax(a) sum(s',r) P(s',r|s,a)[r + gamma V(s')]
+        if old-action different pi(s), then policy-stable <- false
+    if policy-stable, then stop and return V = v* and pi = pi*; else go 2
+    also, if policy evaluated equal to the old, keep this and stop iteration.
+    otherwise infinite loop, ex.4.4 pag. 104.
+
+    env to test pag. 103
+
+    POLICY ITERATION FOR ACTION VALUES
+    1. initialization:
+    Q(a,s) in Real and pi(s) in A(s) arbitrarily for all s in S
+    2. policy evaluation:
+    Loop:
+    delta <- 0
+    Loop for each s in S:
+        q <- Q(a,s)
+        Q(a,s) <- sum(s',r) P(s',r|s,a)[r + gamma [sum(a') pi(a'|s') Q(s',a')] ]
+        delta <- max(delta, |q - Q(s,a)|)
+    until delta < theta
+    3. policy improvement:
+    policy-stable <- true
+    for each s in S:
+        old-action <- pi(s)
+        pi(s) <- argmax(a) Q(s,a)
+        if old-action different pi(s), then policy-stable <- false
+    if policy-stable, then stop and return Q = q* and pi = pi*; else go 2
+    also, if policy evaluated equal to the old, keep this and stop iteration.
+
+    it's possible to combine the two passages of policy iteration in just one, and it's called
+    value iteration. We just take the max action in every step.
+    VALUE ITERATION
+    parameter: theta threshold >0 determining accuracy of estimation
+    initialize: V(s) for all s in S+, arbitrarily except V(terminal)=0
+    Loop:
+        delta <- 0
+        Loop for each s in S:
+            v <- V(s)
+            V(s) <- max(a) sum(s',r) P(s',r|s,a)[r + gamma V(s')]
+            delta <- max(delta, |v - V(s)|)
+    until delta < 0
+    Output: a deterministic policy, pi = pi* such that pi(s)=argmax(a)sum(s',r) P(s',r|s,a)[r + gamma V(s')]
+    page 106 there are more indications
+    Faster convergence is often achieved by interposing multiple policy evaluation sweeps
+    between each policy improvement sweep.
+
+    env to test pag. 106
+
+    Asynchronous DP are in place iterative DP, they do not systematically sweep the entire state
+    set. Update values for states in a whatsoever order using the available values.
+    But to converge correctly must update the values of all states.
 
     """
     def __init__(self):

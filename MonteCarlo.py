@@ -47,6 +47,42 @@ class MonteCarlo:
     exploring starts clause, prevent the non exploration of possible actions.
     every starting action-state pair has non 0 probability of being selected at the start
 
+    monte carlo can do control too, and it's inside the GPI container
+    we perform alternating complete steps of policy evaluation and policy improvement
+    policy improvement is made by making policy greedy, in respect to q_pi_k
+
+    MONTE CARLO ES (Exploring Starts)
+    Initialize:
+        pi(s) in A(s) arbitrarily for all s in S
+        Q(s,a) in real arbitrarily for all s in S and a in A(s)
+        Returns(s,a) <- empty list, for all s in S and a in A(s)
+    Loop forever (for each episode):
+        Choose S0 in S, A0 in A(S0) randomly such that all pairs gave probability > 0
+        Generate an episode from S0,A0, following pi: S0,A0,R1,...S(T-1),A(T-1),RT
+        G <- 0
+        Loop for each step of episode t = T-1, T-2,...,0:
+            G <- gamma G + R(t+1)
+            Unless the pair St,At appears in S0,A0,S1,A1,...S(t-1),A(t-1):
+                Append G to Returns(St,At)
+                Q(St,At) <- average(Returns(St,At))
+                pi(St) <- argmax(a) Q(St,a)
+
+    More efficient version as in section 2.4: (pag. 121)
+    Initialize:
+        pi(s) in A(s) arbitrarily for all s in S
+        Q(s,a) in real arbitrarily for all s in S and a in A(s)
+        N(s,a) <- 0 # the avg is done on multiple episodes obviously! And each pair has his one
+    Loop forever (for each episode):
+        Choose S0 in S, A0 in A(S0) randomly such that all pairs gave probability > 0
+        Generate an episode from S0,A0, following pi: S0,A0,R1,...S(T-1),A(T-1),RT
+        G <- 0
+        Loop for each step of episode t = T-1, T-2,...,0:
+            G <- gamma G + R(t+1)
+            Unless the pair St,At appears in S0,A0,S1,A1,...S(t-1),A(t-1):
+                Q(St,At) <- (N(s,a)-1)/N(s,a) Q(St,At) + 1/N(s,a) G
+                pi(St) <- argmax(a) Q(St,a)
+
+    Apply also this to the poker env.
 
 
     """

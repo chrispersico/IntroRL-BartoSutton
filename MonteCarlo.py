@@ -84,6 +84,71 @@ class MonteCarlo:
 
     Apply also this to the poker env.
 
+    Now we want to avoid the unlikely assumption of exploring starts
+
+    This following will be ON-policy: attempt to evaluate or improve the policy that is used to
+    make decisions. Like Monte Carlo ES
+    The policy is soft as pi(a|s)>0 for all s in S and a in A.
+    now we present the eps-greedy policy: most of the time they choose an action that has max
+    estimated action value, but with probability eps they instead select a random action.
+    the minimal probability of a non-greedy action is eps/(|A(s)|) and the remaining bulk of the
+    probability is (1 - eps + eps/(|A(s)|)), given to the greedy action.
+    eps-greedy are eps-soft policies.
+    On-policy first-visit MC control (for eps-soft policies)
+    Algorithm parameter: small eps > 0
+    Initialize:
+        pi <- an arbitrary eps-soft policy
+        Q(s,a) in real (arbitrarily), for all s in S and a in A(s)
+        Returns(s,a) <- empty list, for all s in S and a in A(s)
+    Repeat forever (for each episode):
+        Generate an episode following pi: S0,A0,R1,...,S(T-1),A(T-1),RT
+        G <- 0
+        Loop for each step of the episode, t=T-1,T-2,...0:
+            G <- gamma G + R(t+1)
+            Unless the pair St,At appears in S0,A0,S1,A1...S(t-1),A(t-1):
+                Append G to Returns(St,At)
+                Q(St,At) <- average(Returns(St,At))
+                A* <- argmax(a) Q(St,a)
+                For all a in A(s):
+                    pi(a|St) <- {(1 - eps + eps/(|A(s)|)) if a=A* OR eps/(|A(s)|) if a!=A*}
+
+    Now Off-policy prediction via importance sampling
+    We use two policies, one that is learned about and that becomes the optimal policy and one
+    that is more exploratory and is used to generate behaviour.
+    Target policy and behaviour policy -> so is off the target policy.
+    They can also be used in different context like learning from human experience or
+    non-learning controllers, or for multi step predictive models of world's dynamic.
+
+    Now we consider the prediction problem, with both target and behavior policies are fixed.
+    So, estimate v_pi and q_pi, with episodes following another policy b, with b != pi
+    pi target
+    b behaviour
+    so if pi(a|s)>0 implies b(a|s)>0 -> assumption of coverage
+    so for the coverage it implies that b needs to be stochastic in states where it is not
+    identical to pi.
+    In control problem for example pi is deterministic.
+
+    all off-policy methods utilize importance sampling a general technique for estimating
+    expected values under one distribution given samples form another.
+    Apply importance sampling to off-policy learning by weighting returns according to the
+    relative probability of their trajectories occurring under pi and b -> importance sampling ratio
+    Basically the v_pi is computed adding a ratio of pi/b to the expectation computed over b.
+
+    if importance sampling is a simple average as in 5.5, is ordinary importance sampling
+    if at denominator there is sum of weights, is weighted importance sampling.
+
+    the weighted is biased, the simple is unbiased
+    the variance of weighted converges to 0 even if the variance of the ratios is inf, the
+    variance or simple is unbounded as the variance of ratios.
+
+    these assumptions where for the first time visit. in the every-visit are both biased, but
+    in both the bias falls asymptotically to zero as the number of samples increases.
+
+    every visit approach is usually preferred.
+
+    Example 5.4 pag 127 on blackjack and off policy learning.
+
+
 
     """
     def __init__(self):

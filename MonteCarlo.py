@@ -148,6 +148,24 @@ class MonteCarlo:
 
     Example 5.4 pag 127 on blackjack and off policy learning.
 
+    Off-policy MC prediction, policy evaluation for estimating Q=q*
+    Initialize, for all s in S, a in A(s):
+        Q(s,a) in real
+        C(s,a) = 0
+    Loop forever (for each episode):
+        b <- any policy with coverage of pi
+        Generate an episode following b: S0,A0,R1,...,S(T-1),A(T-1),RT
+        G <- 0
+        W <- 1
+        Loop for each step of episode, t=T-1,T-2,...,0 while W != 0:
+            G <- gamma G + R(t+1)
+            C(St,At) <- C(St,At) + W
+            Q(St,At) <- Q(St,At) + W/(C(St,At)) [G - Q(St,At)]
+            W <- W pi(At|St)/b(At|St)
+
+    It also works for the on-policy case just by choosing the target and pehaviour policy
+    as the same.
+
 
 
     """
